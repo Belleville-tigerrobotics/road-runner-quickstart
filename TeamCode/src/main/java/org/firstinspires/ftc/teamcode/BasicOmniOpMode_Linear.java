@@ -77,42 +77,20 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-//    private DcMotor leftFrontDrive = null;
-//    private DcMotor leftBackDrive = null;
-//    private DcMotor rightFrontDrive = null;
-//    private DcMotor rightBackDrive = null;
+//These are the elevator heights.  Note, these are absolute values...the actual encoder is reversed so these are inverted when implemented
     private int currentElevatorHeight = 0;
-    private int elevatorPosition0 = 0;
-    private int elevatorPosition1 = -100;
-    private int elevatorPosition2 = -800;
-    private int elevatorPosition3 = -1500;
+    private int elevatorPosition0 = 250;
+    private int elevatorPosition1 = 1729;
+    private int elevatorPosition2 = 2890;
+    private int elevatorPosition3 = 4100;
     private boolean manualElevatorActive = false;
+//    private int speedreducer = .8;
 
     @Override
     public void runOpMode() {
 
         robot.init();
 
-        // Initialize the hardware variables. Note that the strings used here must correspond
-        // to the names assigned during the robot configuration step on the DS or RC devices.
-//        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
-//        leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
-//        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-//        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-
-        // ########################################################################################
-        // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
-        // ########################################################################################
-        // Most robots need the motors on one side to be reversed to drive forward.
-        // The motor reversals shown here are for a "direct drive" robot (the wheels turn the same direction as the motor shaft)
-        // If your robot has additional gear reductions or uses a right-angled drive, it's important to ensure
-        // that your motors are turning in the correct direction.  So, start out with the reversals here, BUT
-        // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
-        // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
-        // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
-//        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);//       leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-//        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-//        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -142,35 +120,44 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
 
 //Now it's time to see if we need to set the elevators
             if (gamepad1.a) {
-                    if (gamepad1.dpad_left) { elevatorPosition1 = robot.getElevatorHeight(); }  else {
-                        if (gamepad1.dpad_up) { elevatorPosition2 = robot.getElevatorHeight(); }  else {
-                            if (gamepad1.dpad_right) { elevatorPosition3 = robot.getElevatorHeight(); } else {
-                                if (gamepad1.dpad_down) { elevatorPosition0 = robot.getElevatorHeight(); } }}}
+                    if (gamepad1.dpad_left) { elevatorPosition1 = Math.abs(robot.getElevatorHeight()); }  else {
+                        if (gamepad1.dpad_up) { elevatorPosition2 = Math.abs(robot.getElevatorHeight()); }  else {
+                            if (gamepad1.dpad_right) { elevatorPosition3 = Math.abs(robot.getElevatorHeight()); } else {
+                                if (gamepad1.dpad_down) { elevatorPosition0 = Math.abs(robot.getElevatorHeight()); } }}}
 
-            }
+            } else { //if not gamepad1.a pressed
 
-            if (gamepad1.dpad_left) { robot.setElevatorPosition (elevatorPosition1); }  else {
-                if (gamepad1.dpad_up) { robot.setElevatorPosition (elevatorPosition2);}  else {
-                    if (gamepad1.dpad_right) { robot.setElevatorPosition (elevatorPosition3);}  else {
-                        if (gamepad1.dpad_down) { robot.setElevatorPosition (elevatorPosition0); } }
+                if (gamepad1.dpad_left) {
+                    robot.setElevatorPosition(-elevatorPosition1);
+                } else {
+                    if (gamepad1.dpad_up) {
+                        robot.setElevatorPosition(-elevatorPosition2);
+                    } else {
+                        if (gamepad1.dpad_right) {
+                            robot.setElevatorPosition(-elevatorPosition3);
+                        } else {
+                            if (gamepad1.dpad_down) {
+                                robot.setElevatorPosition(-elevatorPosition0);
+                            }
+                        }
+                    }
                 }
             }
-
 // Reduce the maximum drive speed if the elevator is up high
-            currentElevatorHeight = robot.getElevatorHeight();
-            if (currentElevatorHeight < elevatorPosition1 ) { maximumDriveSpeed = 1 ; } else {
-                if (currentElevatorHeight < elevatorPosition2) { maximumDriveSpeed = .75; } else {
-                    if (currentElevatorHeight < elevatorPosition3) {maximumDriveSpeed = .4; } else {
+            currentElevatorHeight = Math.abs(robot.getElevatorHeight());
+            if (currentElevatorHeight < elevatorPosition1 ) { maximumDriveSpeed = .8 ; } else {
+                if (currentElevatorHeight < elevatorPosition2) { maximumDriveSpeed = .6; } else {
+                    if (currentElevatorHeight < elevatorPosition3) {maximumDriveSpeed = .2; } else {
                         maximumDriveSpeed = .3; }
                 }
             }
 
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-   //         double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double axial   = gamepad1.right_stick_x;
-            double lateral =  -gamepad1.left_stick_x;
-   //         double yaw     =  gamepad1.right_stick_x;
-            double yaw      = -gamepad1.left_stick_y;
+            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.//         double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+//            double axial   = gamepad1.right_stick_x;
+            double axial    = -gamepad1.left_stick_y;
+            double lateral =  gamepad1.left_stick_x;
+ //           double yaw      = -gamepad1.left_stick_y;
+            double yaw      = gamepad1.right_stick_x;
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
             double leftFrontPower  = axial + lateral + yaw;
@@ -184,7 +171,7 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
 
-            if (max > maximumDriveSpeed) {
+            if (max > 1) {
                 leftFrontPower  /= max;
                 rightFrontPower /= max;
                 leftBackPower   /= max;
@@ -208,8 +195,11 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
             */
 
-            // Send calculated power to wheels
-            robot.setDrivePower(leftFrontPower,rightFrontPower,leftBackPower,rightBackPower);
+            // Send calculated power to wheels, and reduce speed as necessary due to elevator height
+            robot.setDrivePower(leftFrontPower*maximumDriveSpeed,
+                    rightFrontPower*maximumDriveSpeed,
+                    leftBackPower*maximumDriveSpeed,
+                    rightBackPower*maximumDriveSpeed);
 
            // Show the elapsed game time and wheel power.
             telemetry.addData("Press and hold A to set elevator heights", "height: " + currentElevatorHeight );
