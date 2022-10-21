@@ -34,6 +34,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
+ * Controls:
+ * Controller A:  Drive, shuttle (bumpers)
+ *
+ * Controller B:  Lift, , Gripper (bumpers)
+ *
+ *
  * This file contains an example of a Linear "OpMode".
  * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
  * The names of OpModes appear on the menu of the FTC Driver Station.
@@ -83,7 +89,12 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
     private int elevatorPosition1 = 1729;
     private int elevatorPosition2 = 2890;
     private int elevatorPosition3 = 4100;
-    private boolean manualElevatorActive = false;
+  //  private boolean manualElevatorActive = false;
+    private boolean elevatorMoving = false;
+    private double elevatorSpeed =0 ;
+    private int currentShuttlePosition = .5 ;
+    private int newShuttlePosition = .5;
+
 //    private int speedreducer = .8;
 
     @Override
@@ -104,39 +115,70 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             double maximumDriveSpeed = 1 ;
             double max;
 
+            elevatorSpeed = gamepad2.left_trigger - gamepad2.right_trigger;
+            //need to do some stuff here so that we don't exceen the elevator range and trip the overcurrent on the controller
+            currentElevatorHeight = Math.abs(robot.getElevatorHeight());
+                if ((Math.abs(elevatorSpeed)) > .2) {  //then we have some speed request happening
+                    if ((currentElevatorHeight > 4200) || (currentElevatorHeight < 1))  //|| means OR
+                    { //we've exceeded the range
+                        elevatorMoving = false;
+                        robot.setElevatorPower(0);
+                    } else{ //now we do some elevator moving stuff
+                        robot.setElevatorPower(elevatorSpeed);
+                        elevatorMoving = true;
+                    }
+                } else if (elevatorMoving) { // no more elevator speed, but only if we were already moving
+                    elevatorMoving = false;
+                    robot.setElevatorPower(0);
+                }
+
+//some old code here...delete if the above code works as planned
             // Set Elevator power
  //           robot.setElevatorPower( (gamepad1.dpad_up ? .5 : 0) - (gamepad1.dpad_down ? .5 : 0));
-            if (gamepad1.left_trigger +gamepad1.right_trigger > .1)   {
-                robot.setElevatorPower(gamepad1.left_trigger - gamepad1.right_trigger);
-                manualElevatorActive = true;
-            } else if ( manualElevatorActive ) {
-                robot.setElevatorPower(0) ;
-                manualElevatorActive = false;
-            }
-            robot.setShuttlePower( (gamepad1.left_bumper ? 1:0) - (gamepad1.right_bumper ? 1:0));
+ //           if (gamepad1.left_trigger +gamepad1.right_trigger > .1)   {
+ //               robot.setElevatorPower(gamepad1.left_trigger - gamepad1.right_trigger);
+ //               manualElevatorActive = true;
+ //           } else if ( manualElevatorActive ) {
+//                robot.setElevatorPower(0) ;
+ //               manualElevatorActive = false;
+  //          }
 
-            if ( gamepad1.x) { robot.gripperpickup() ; };
-            if ( gamepad1.y) { robot.gripperdrop() ; };
+
+            newShuttlePosition = (gamepad1.left_bumper ? 1:0) - (gamepad1.right_bumper ? 2:0); //some funny math here to make it so left=1 right = 2 both=3, neither=0
+            switch (newShuttlePosition) {
+                case 1:
+                    robot.setShuttlePower(0); //{left button}
+                    break;
+                case 2:
+                    robot.setShuttlePower(1); //right button
+                    break;
+                case 3:
+                    robot.setShuttlePower(.5); //both buttons
+                    break;
+            }
+
+            if ( gamepad2.left_bumper) { robot.gripperpickup() ; };
+            if ( gamepad2.right_bumper) { robot.gripperdrop() ; };
 
 //Now it's time to see if we need to set the elevators
-            if (gamepad1.a) {
-                    if (gamepad1.dpad_left) { elevatorPosition1 = Math.abs(robot.getElevatorHeight()); }  else {
-                        if (gamepad1.dpad_up) { elevatorPosition2 = Math.abs(robot.getElevatorHeight()); }  else {
-                            if (gamepad1.dpad_right) { elevatorPosition3 = Math.abs(robot.getElevatorHeight()); } else {
-                                if (gamepad1.dpad_down) { elevatorPosition0 = Math.abs(robot.getElevatorHeight()); } }}}
+            if (gamepad2.a) {
+                    if (gamepad2.dpad_left) { elevatorPosition1 = Math.abs(robot.getElevatorHeight()); }  else {
+                        if (gamepad2.dpad_up) { elevatorPosition2 = Math.abs(robot.getElevatorHeight()); }  else {
+                            if (gamepad2.dpad_right) { elevatorPosition3 = Math.abs(robot.getElevatorHeight()); } else {
+                                if (gamepad2.dpad_down) { elevatorPosition0 = Math.abs(robot.getElevatorHeight()); } }}}
 
             } else { //if not gamepad1.a pressed
 
-                if (gamepad1.dpad_left) {
+                if (gamepad2.dpad_left) {
                     robot.setElevatorPosition(-elevatorPosition1);
                 } else {
-                    if (gamepad1.dpad_up) {
+                    if (gamepad2.dpad_up) {
                         robot.setElevatorPosition(-elevatorPosition2);
                     } else {
-                        if (gamepad1.dpad_right) {
+                        if (gamepad2.dpad_right) {
                             robot.setElevatorPosition(-elevatorPosition3);
                         } else {
-                            if (gamepad1.dpad_down) {
+                            if (gamepad2.dpad_down) {
                                 robot.setElevatorPosition(-elevatorPosition0);
                             }
                         }
@@ -144,7 +186,7 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
                 }
             }
 // Reduce the maximum drive speed if the elevator is up high
-            currentElevatorHeight = Math.abs(robot.getElevatorHeight());
+//            currentElevatorHeight = Math.abs(robot.getElevatorHeight()); //removing this..we just set it above a few lines back should be still good
             if (currentElevatorHeight < elevatorPosition1 ) { maximumDriveSpeed = .8 ; } else {
                 if (currentElevatorHeight < elevatorPosition2) { maximumDriveSpeed = .6; } else {
                     if (currentElevatorHeight < elevatorPosition3) {maximumDriveSpeed = .2; } else {
@@ -204,8 +246,8 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
            // Show the elapsed game time and wheel power.
             telemetry.addData("Press and hold A to set elevator heights", "height: " + currentElevatorHeight );
        //     telemetry.addData("ElevatorPosition", "Run Time: " + runtime.toString());
-            telemetry.addData("bumpers for shuttle, trigger for up/dn", " "  );
-            telemetry.addData("x,y for gripper", " "  );
+            telemetry.addData("Controller A bumpers for shuttle", " "  );
+            telemetry.addData("ControllerB Bumpers for gripper, triggers for up down, dpad for set positions", " "  );
             telemetry.addData("Servo Position", robot.getGripperPosition());
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
