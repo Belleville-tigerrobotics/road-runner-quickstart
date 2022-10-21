@@ -92,8 +92,8 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
   //  private boolean manualElevatorActive = false;
     private boolean elevatorMoving = false;
     private double elevatorSpeed =0 ;
-    private int currentShuttlePosition = .5 ;
-    private int newShuttlePosition = .5;
+    private double currentShuttlePosition = 0.5 ;
+    private int newShuttlePosition;
 
 //    private int speedreducer = .8;
 
