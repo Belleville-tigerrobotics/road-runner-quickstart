@@ -21,23 +21,25 @@
 
 package org.firstinspires.ftc.teamcode.drive.auton;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
-import org.firstinspires.ftc.teamcode.drive.auton.AprilTagDetectionPipeline;
 
 import java.util.ArrayList;
 
-@TeleOp
-@Disabled
-public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
+@Autonomous
+//@Disabled
+public class AutoLeftSideV1 extends LinearOpMode
 {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -56,13 +58,21 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
     // UNITS ARE METERS
     double tagsize = 0.166;
 
-    int ID_TAG_OF_INTEREST = 18; // Tag ID 18 from the 36h11 family
+    int ID_TAG_OF_INTEREST_1 = 1; // Tag ID 18 from the 36h11 family
+    int ID_TAG_OF_INTEREST_2 = 2; // Tag ID 18 from the 36h11 family
+    int ID_TAG_OF_INTEREST_3 = 3; // Tag ID 18 from the 36h11 family
+
+    double signalIdFound = 1;
+
+    Trajectory traj = null;
 
     AprilTagDetection tagOfInterest = null;
 
     @Override
     public void runOpMode()
     {
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
@@ -99,18 +109,20 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
 
                 for(AprilTagDetection tag : currentDetections)
                 {
-                    if(tag.id == ID_TAG_OF_INTEREST)
+                    if((tag.id == 1) || (tag.id == 2) || (tag.id ==3) )
                     {
                         tagOfInterest = tag;
                         tagFound = true;
                         break;
                     }
+
                 }
 
                 if(tagFound)
                 {
                     telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
                     tagToTelemetry(tagOfInterest);
+                    signalIdFound = tagOfInterest.id; //identify the id number we found
                 }
                 else
                 {
@@ -169,6 +181,17 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
         /* Actually do something useful */
         if(tagOfInterest == null)
         {
+            telemetry.addLine("No tag snapshot available, Running default position 1:(");
+            telemetry.update();
+
+
+            TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d(36, -67, 0))
+                    .strafeLeft(25)
+                    .forward(30)
+                    .build();
+            drive.followTrajectorySequence(traj);
+
+
             /*
              * Insert your autonomous code here, presumably running some default configuration
              * since the tag was never sighted during INIT
@@ -176,29 +199,39 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
         }
         else
         {
-            /*
-             * Insert your autonomous code here, probably using the tag pose to decide your configuration.
-             */
+
 
             // e.g.
-            if(tagOfInterest.pose.x <= 20)
+            if(signalIdFound ==1 )
             {
                 // do something
+                TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d(36, -67, 0))
+                        .strafeLeft(25)
+                        .forward(30)
+                        .build();
+                drive.followTrajectorySequence(traj);
             }
-            else if(tagOfInterest.pose.x >= 20 && tagOfInterest.pose.x <= 50)
+            else if(signalIdFound==2)
             {
-                // do something else
+                TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d(36, -67, 0))
+                        .strafeLeft(25)
+                        .forward(30)
+                        .forward(20)
+                        .strafeRight(25)
+                        .build();
+                drive.followTrajectorySequence(traj);
             }
-            else if(tagOfInterest.pose.x >= 50)
+            else if(signalIdFound==3)
             {
-                // do something else
+                TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d(36, -67, 0))
+                        .strafeRight(25)
+                        .forward(30)
+                        .build();
+                drive.followTrajectorySequence(traj);
             }
         }
 
-
-        /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
-        while (opModeIsActive()) {sleep(20);}
-    }
+  }
 
     void tagToTelemetry(AprilTagDetection detection)
     {

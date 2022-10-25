@@ -29,10 +29,16 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 /**
  * Controls:
@@ -76,9 +82,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
     // gripper controlled with controller2 bumpers
 
-@TeleOp(name="Basic: v1.1 Omni Linear OpMode", group="Linear Opmode")
-//@Disabled
-public class BasicOmniOpMode_Linear extends LinearOpMode {
+@TeleOp(name="14760DriveRelative1", group="Linear Opmode")
+@Disabled
+public class DriveRelative extends LinearOpMode {
 
     RobotHardware   robot       = new RobotHardware(this);
 
@@ -96,7 +102,24 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
     private double currentShuttlePosition = 0.5 ;
     private int newShuttlePosition;
 
-//    private int speedreducer = .8;
+//variables for field-centric drive
+    double driveTurn;
+    //double driveVertical;
+    //double driveHorizontal;
+
+    double gamepadXCoordinate;
+    double gamepadYCoordinate;
+    double gamepadHypot;
+    double gamepadDegree;
+    double robotDegree;
+    double movementDegree;
+    double gamepadXControl;
+    double gamepadYControl;
+    double speedMultiplier=.8;
+
+
+
+
 
     @Override
     public void runOpMode() {
@@ -109,11 +132,15 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         telemetry.update();
 
         waitForStart();
-        runtime.reset();
+        runtime.reset();//start the clock
+
+        robot.imustart();//setup the IMU
+
+
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            double maximumDriveSpeed = .8 ;
+            double maximumDriveSpeed = 1 ;
             double max;
 
             elevatorSpeed = gamepad2.left_trigger - gamepad2.right_trigger;
@@ -133,16 +160,6 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
                     robot.setElevatorPower(0);
                 }
 
-//some old code here...delete if the above code works as planned
-            // Set Elevator power
- //           robot.setElevatorPower( (gamepad1.dpad_up ? .5 : 0) - (gamepad1.dpad_down ? .5 : 0));
- //           if (gamepad1.left_trigger +gamepad1.right_trigger > .1)   {
- //               robot.setElevatorPower(gamepad1.left_trigger - gamepad1.right_trigger);
- //               manualElevatorActive = true;
- //           } else if ( manualElevatorActive ) {
-//                robot.setElevatorPower(0) ;
- //               manualElevatorActive = false;
-  //          }
 
             if (gamepad1.left_bumper && gamepad1.right_bumper) {robot.setShuttlePower(.5);} else {
                 if (gamepad1.left_bumper) {
@@ -204,7 +221,7 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
                         maximumDriveSpeed = .3; }
                 }
             }
-
+/*
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.//         double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
 //            double axial   = gamepad1.right_stick_x;
             double axial    = -gamepad1.left_stick_y;
@@ -241,20 +258,58 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             //      the setDirection() calls above.
             // Once the correct motors move in the correct direction re-comment this code.
 
-            /*
-            leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
-            leftBackPower   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
-            rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
-            rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
-            */
 
             // Send calculated power to wheels, and reduce speed as necessary due to elevator height
             robot.setDrivePower(leftFrontPower*maximumDriveSpeed,
                     rightFrontPower*maximumDriveSpeed,
                     leftBackPower*maximumDriveSpeed,
                     rightBackPower*maximumDriveSpeed);
+*/
 
-           // Show the elapsed game time and wheel power.
+
+            //field centric drive code goes here
+
+
+            driveTurn = -gamepad1.right_stick_x;
+            //driveVertical = -gamepad1.right_stick_y;
+            //driveHorizontal = gamepad1.right_stick_x;
+
+            gamepadXCoordinate = gamepad1.left_stick_x; //this simply gives our x value relative to the driver
+            gamepadYCoordinate = -gamepad1.left_stick_y; //this simply gives our y vaue relative to the driver
+            gamepadHypot = Range.clip(Math.hypot(gamepadXCoordinate, gamepadYCoordinate), 0, 1);
+            //finds just how much power to give the robot based on how much x and y given by gamepad
+            //range.clip helps us keep our power within positive 1
+            // also helps set maximum possible value of 1/sqrt(2) for x and y controls if at a 45 degree angle (which yields greatest possible value for y+x)
+            gamepadDegree = Math.atan2(gamepadYCoordinate, gamepadXCoordinate) *57;
+            //the inverse tangent of opposite/adjacent gives us our gamepad degree
+            robotDegree = robot.imugetAngle();
+            movementDegree = gamepadDegree - robotDegree;
+
+            //adjust the angle we need to move at by finding needed movement degree based on gamepad and robot angles
+            gamepadXControl = Math.cos(Math.toRadians(movementDegree)) * gamepadHypot;
+            //by finding the adjacent side, we can get our needed x value to power our motors
+            gamepadYControl = Math.sin(Math.toRadians(movementDegree)) * gamepadHypot;
+            //by finding the opposite side, we can get our needed y value to power our motors
+
+            /**
+             * again, make sure you've changed the motor names and variables to fit your team
+             */
+
+            //by mulitplying the gamepadYControl and gamepadXControl by their respective absolute values, we can guarantee that our motor powers will not exceed 1 without any driveTurn
+            //since we've maxed out our hypot at 1, the greatest possible value of x+y is (1/sqrt(2)) + (1/sqrt(2)) = sqrt(2)
+            //since (1/sqrt(2))^2 = 1/2 = .5, we know that we will not exceed a power of 1 (with no turn), giving us more precision for our driving
+            robot.setDrivePower(
+                ((gamepadYControl * Math.abs(gamepadYControl) - gamepadXControl * Math.abs(gamepadXControl) + driveTurn)*speedMultiplier),
+                ((gamepadYControl * Math.abs(gamepadYControl) + gamepadXControl * Math.abs(gamepadXControl) + driveTurn)*speedMultiplier),
+                ((gamepadYControl * Math.abs(gamepadYControl) + gamepadXControl * Math.abs(gamepadXControl) - driveTurn)*speedMultiplier),
+                ((gamepadYControl * Math.abs(gamepadYControl) - gamepadXControl * Math.abs(gamepadXControl) - driveTurn)*speedMultiplier)
+            );
+
+
+
+
+
+            // Show the elapsed game time and wheel power.
             telemetry.addData("Press and hold A to set elevator heights", "height: " + currentElevatorHeight );
        //     telemetry.addData("ElevatorPosition", "Run Time: " + runtime.toString());
             telemetry.addData("Controller A bumpers for shuttle", " "  );
@@ -262,8 +317,16 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             telemetry.addData("Servo Position", robot.getGripperPosition());
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+//            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
+//            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("Movement degree"  , movementDegree);
+            telemetry.addData("gamepad degree"  , gamepadDegree);
+            telemetry.addData("robot degree"  , robotDegree);
+            telemetry.addData("x/y", "%4.2f, %4.2f", gamepad1.right_stick_x, gamepad1.right_stick_y);
+            telemetry.addData("left Distance", robot.getDistanceLeft());
+            telemetry.addData("right Distance", robot.getDistanceRight());
+
+
             telemetry.update();
         }
     }}
