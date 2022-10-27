@@ -141,11 +141,12 @@ public class GameDriveV1 extends LinearOpMode {
             if ( currentElevatorHeight <550 && gamepad2.y ){
                 telemetry.addData("Beginning Pickup Sequence","");
                 telemetry.update();
+                robot.setDrivePower(0,0,0,0); //stop drive motors so we don't run away
                 robot.gripperdrop(); //open the gripper
-                robot.setShuttlePower(.7);  // slide slightly forware
+                robot.setShuttlePower(.7);  // slide slightly forward
                 sleep(1500); //brief pause to let the gripper and shuttle get to where they need to be
                 //now lower the elevator to 50
-                robot.setElevatorPosition(-80);
+                robot.setElevatorPosition(-90);
                 telemetry.addData("Pickup Sequence:Moving Elevator","");
                 telemetry.update();
 //                while (robot.getElevatorHeight() <-85 && gamepad2.y )  { }  //do nothing until the elevator gets there or we let go of y
@@ -299,7 +300,7 @@ public class GameDriveV1 extends LinearOpMode {
 
 
             // Show the elapsed game time and wheel power.
-            telemetry.addData("Press and hold A to set elevator heights", "height: " + currentElevatorHeight );
+ //           telemetry.addData("Press and hold A to set elevator heights", "height: " + currentElevatorHeight );
        //     telemetry.addData("ElevatorPosition", "Run Time: " + runtime.toString());
             telemetry.addData("Controller A bumpers for shuttle", " "  );
             telemetry.addData("ControllerB Bumpers for gripper, triggers for up down, dpad for set positions", " "  );
