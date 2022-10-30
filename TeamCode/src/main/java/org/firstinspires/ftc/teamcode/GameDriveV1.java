@@ -77,7 +77,7 @@ public class GameDriveV1 extends LinearOpMode {
     double movementDegree;
     double gamepadXControl;
     double gamepadYControl;
-    double speedMultiplier=.5;
+    double speedMultiplier=.6;
 
 //rgb values for color sensor
     double colorvalues[] = {0F, 0F, 0F};
@@ -143,7 +143,7 @@ public class GameDriveV1 extends LinearOpMode {
                 telemetry.update();
                 robot.setDrivePower(0,0,0,0); //stop drive motors so we don't run away
                 robot.gripperdrop(); //open the gripper
-                robot.setShuttlePower(.7);  // slide slightly forward
+                robot.setShuttlePower(1);  // slide slightly forward
                 sleep(1500); //brief pause to let the gripper and shuttle get to where they need to be
                 //now lower the elevator to 50
                 robot.setElevatorPosition(-90);
