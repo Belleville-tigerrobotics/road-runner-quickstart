@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -63,7 +63,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
  *
  */
 
-public class RobotHardware {
+public class RobotAccessoriesPowerPlay {
 
     /* Declare OpMode members. */
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
@@ -98,7 +98,7 @@ public class RobotHardware {
     public static final double ARM_DOWN_POWER = -0.45;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
-    public RobotHardware(LinearOpMode opmode) {
+    public RobotAccessoriesPowerPlay(LinearOpMode opmode) {
         myOpMode = opmode;
     }
 
@@ -166,9 +166,11 @@ public class RobotHardware {
         // Define and initialize ALL installed servos.
         gripper = myOpMode.hardwareMap.get(Servo.class, "gripper");
         gripper2 = myOpMode.hardwareMap.get(Servo.class, "gripper2");
+
         shuttle = myOpMode.hardwareMap.get(Servo.class, "shuttle");
         gripper.setPosition(0);
         gripper2.setPosition(1);
+
         shuttle.setPosition(MID_SERVO);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
@@ -245,13 +247,11 @@ public class RobotHardware {
     }
 
     public void gripperpickup() {
-
         gripper.setPosition(1);
         gripper2.setPosition(0);
     }
 
     public void gripperdrop() {
-
         gripper.setPosition(0);
         gripper2.setPosition(1);
     }
