@@ -46,6 +46,7 @@ public class DriveConstants {
     public static double WHEEL_RADIUS = 1.89; // 1.89 in  this is 96mm diameter //I think these are all correct?  Need to check
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
     public static double TRACK_WIDTH = 16.8; // in  //im guessing on this one need to measure
+//    public static double TRACK_WIDTH = 13.3; // in  //im guessing on this one need to measure
 
 
     /*
@@ -57,6 +58,11 @@ public class DriveConstants {
     public static double kV = 1.0 / rpmToVelocity(MAX_RPM);
     public static double kA = 0;
     public static double kStatic = 0;
+//    public static double kV = 1 ;//0.017194031653632007 / rpmToVelocity(MAX_RPM);
+//    public static double kA = .00;
+//    public static double kStatic = 0;
+
+
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
@@ -67,7 +73,7 @@ public class DriveConstants {
      */
     public static double MAX_VEL = 40;
     public static double MAX_ACCEL = 40;
-    public static double MAX_ANG_VEL = Math.toRadians(180);//was 60
+    public static double MAX_ANG_VEL =    Math.toRadians(180);//was 60
     public static double MAX_ANG_ACCEL = Math.toRadians(180); //was 60
 
 

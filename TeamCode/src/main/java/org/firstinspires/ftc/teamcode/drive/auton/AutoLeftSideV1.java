@@ -28,6 +28,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.drive.RobotAccessoriesPowerPlay;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
@@ -43,6 +44,7 @@ public class AutoLeftSideV1 extends LinearOpMode
 {
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
+ //   RobotAccessoriesPowerPlay robotAccessories;
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -58,9 +60,9 @@ public class AutoLeftSideV1 extends LinearOpMode
     // UNITS ARE METERS
     double tagsize = 0.166;
 
-    int ID_TAG_OF_INTEREST_1 = 1; // Tag ID 18 from the 36h11 family
-    int ID_TAG_OF_INTEREST_2 = 2; // Tag ID 18 from the 36h11 family
-    int ID_TAG_OF_INTEREST_3 = 3; // Tag ID 18 from the 36h11 family
+    int ID_TAG_OF_INTEREST_1 = 1; // Tag ID 1 from the 36h11 family
+    int ID_TAG_OF_INTEREST_2 = 2; // Tag ID 2 from the 36h11 family
+    int ID_TAG_OF_INTEREST_3 = 3; // Tag ID 3 from the 36h11 family
 
     double signalIdFound = 1;
 
@@ -71,7 +73,10 @@ public class AutoLeftSideV1 extends LinearOpMode
     @Override
     public void runOpMode()
     {
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+ //       RobotAccessoriesPowerPlay robotAccessories = new RobotAccessoriesPowerPlay( this );
+  //      robotAccessories.init();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -206,8 +211,8 @@ public class AutoLeftSideV1 extends LinearOpMode
             {
                 // do something
                 TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d(36, -67, 0))
-                        .strafeLeft(45) //25
-                        .forward(35)   //30
+                        .strafeLeft(46) //45
+                        .forward(35)   //35
                         .build();
                 drive.followTrajectorySequence(traj);
             }

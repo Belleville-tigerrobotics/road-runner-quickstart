@@ -82,10 +82,9 @@ public class RobotHardware {
     private Servo shuttle = null;
 
     //now setup the sensors
-    ColorSensor sensorColorLeft;
-    ColorSensor sensorColorRight;
     DistanceSensor sensorDistanceLeft;
     DistanceSensor sensorDistanceRight;
+    DistanceSensor sensorDistanceFront;
 
 
     // Define speed and power limits
@@ -131,10 +130,7 @@ public class RobotHardware {
         // initialize the distance sensors
         sensorDistanceLeft = myOpMode.hardwareMap.get(DistanceSensor.class, "rangeleft");
         sensorDistanceRight = myOpMode.hardwareMap.get(DistanceSensor.class, "rangeright");
-
-        sensorColorLeft = myOpMode.hardwareMap.get(ColorSensor.class, "rangeleft");
-        sensorColorRight = myOpMode.hardwareMap.get(ColorSensor.class, "rangeright");
-
+        sensorDistanceFront = myOpMode.hardwareMap.get(DistanceSensor.class, "rangefront");
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -275,14 +271,8 @@ public class RobotHardware {
     public double getDistanceRight() {
         return sensorDistanceRight.getDistance(DistanceUnit.CM);
     }
+    public double getDistanceFront() { return sensorDistanceFront.getDistance(DistanceUnit.CM); }
 
-    public double getleftcolor() {
-        return sensorColorLeft.argb();
-    }
-
-    public double getrightcolor() {
-        return sensorColorRight.argb();
-    }
 
 }
 

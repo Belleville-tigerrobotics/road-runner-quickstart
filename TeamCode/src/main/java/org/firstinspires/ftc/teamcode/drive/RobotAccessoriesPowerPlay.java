@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.drive;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -63,18 +63,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
  *
  */
 
+//note to self. need to distill this down to just accessories...not drive. for use wiht auton program
+
+
 public class RobotAccessoriesPowerPlay {
 
     /* Declare OpMode members. */
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
 
-    public BNO055IMU imu;
+  //  public BNO055IMU imu;
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    private DcMotor leftFrontDrive = null;
-    private DcMotor rightFrontDrive = null;
-    private DcMotor leftRearDrive = null;
-    private DcMotor rightRearDrive = null;
     private DcMotor elevator = null;
     private Servo gripper = null;
     private Servo gripper2 = null;
@@ -110,14 +109,10 @@ public class RobotAccessoriesPowerPlay {
      */
     public void init() {
         // Define and Initialize Motors (note: need to use reference to actual OpMode).
-        leftFrontDrive = myOpMode.hardwareMap.get(DcMotor.class, "leftFrontDrive");
-        rightFrontDrive = myOpMode.hardwareMap.get(DcMotor.class, "rightFrontDrive");
-        leftRearDrive = myOpMode.hardwareMap.get(DcMotor.class, "leftRearDrive");
-        rightRearDrive = myOpMode.hardwareMap.get(DcMotor.class, "rightRearDrive");
-        elevator = myOpMode.hardwareMap.get(DcMotor.class, "elevator");
+         elevator = myOpMode.hardwareMap.get(DcMotor.class, "elevator");
 
         //initialize the IMU
-
+/*
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -127,7 +122,7 @@ public class RobotAccessoriesPowerPlay {
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu = myOpMode.hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-
+*/
         // initialize the distance sensors
         sensorDistanceLeft = myOpMode.hardwareMap.get(DistanceSensor.class, "rangeleft");
         sensorDistanceRight = myOpMode.hardwareMap.get(DistanceSensor.class, "rangeright");
@@ -135,25 +130,6 @@ public class RobotAccessoriesPowerPlay {
         sensorColorLeft = myOpMode.hardwareMap.get(ColorSensor.class, "rangeleft");
         sensorColorRight = myOpMode.hardwareMap.get(ColorSensor.class, "rangeright");
 
-
-        // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
-        // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
-        // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-//        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        //      rightRearDrive.setDirection(DcMotor.Direction.REVERSE);
-
-//        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftRearDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-//        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-//        rightRearDrive.setDirection(DcMotor.Direction.REVERSE);
-
-
-        // If there are encoders connected, switch to RUN_USING_ENCODER mode for greater accuracy
-        rightFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftFrontDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftRearDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         elevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -175,53 +151,6 @@ public class RobotAccessoriesPowerPlay {
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
-    }
-
-    /**
-     * Calculates the left/right motor powers required to achieve the requested
-     * robot motions: Drive (Axial motion) and Turn (Yaw motion).
-     * Then sends these power levels to the motors.
-     *
-     * @param Drive     Fwd/Rev driving power (-1.0 to 1.0) +ve is forward
-     * @param Turn      Right/Left turning power (-1.0 to 1.0) +ve is CW
-     */
-//    public void driveRobot(double Drive, double Turn) {
-    // Combine drive and turn for blended motion.
-//        double left  = Drive + Turn;
-//        double right = Drive - Turn;
-
-    // Scale the values so neither exceed +/- 1.0
-//        double max = Math.max(Math.abs(left), Math.abs(right));
-//        if (max > 1.0)
-//        {
-//            left /= max;
-//            right /= max;
-//        }
-
-    // Use existing function to drive both wheels.
-//        setDrivePower(left, right);
-//    }
-
-    /**
-     * Pass the requested wheel motor powers to the appropriate hardware drive motors.
-     *
-     * @param leftWheel  Fwd/Rev driving power (-1.0 to 1.0) +ve is forward
-     * @param rightWheel Fwd/Rev driving power (-1.0 to 1.0) +ve is forward
-     */
-    public void setDrivePower(double leftFrontWheel, double rightFrontWheel, double leftRearWheel, double rightRearWheel) {
-        // Output the values to the motor drives.
-        leftFrontDrive.setPower(leftFrontWheel);
-        rightFrontDrive.setPower(rightFrontWheel);
-        leftRearDrive.setPower(leftRearWheel);
-        rightRearDrive.setPower(rightRearWheel);
-    }
-
-    public void setDrivePower2(double rightFrontWheel, double leftFrontWheel, double rightRearWheel, double leftRearWheel) {
-        // Output the values to the motor drives.
-        leftFrontDrive.setPower(leftFrontWheel);
-        rightFrontDrive.setPower(rightFrontWheel);
-        leftRearDrive.setPower(leftRearWheel);
-        rightRearDrive.setPower(rightRearWheel);
     }
 
 
@@ -260,13 +189,13 @@ public class RobotAccessoriesPowerPlay {
         return gripper.getPosition();
     }
 
-    public void imustart() {
-        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
-    }
+//    public void imustart() {
+//        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+//    }
 
-    public double imugetAngle() {
-        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-    }
+//    public double imugetAngle() {
+//        return imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+//    }
 
     public double getDistanceLeft() {
         return sensorDistanceLeft.getDistance(DistanceUnit.CM);

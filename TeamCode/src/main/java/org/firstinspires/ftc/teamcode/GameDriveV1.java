@@ -77,7 +77,7 @@ public class GameDriveV1 extends LinearOpMode {
     double movementDegree;
     double gamepadXControl;
     double gamepadYControl;
-    double speedMultiplier=.6;
+    double speedMultiplier=.5;
 
 //rgb values for color sensor
     double colorvalues[] = {0F, 0F, 0F};
@@ -143,10 +143,10 @@ public class GameDriveV1 extends LinearOpMode {
                 telemetry.update();
                 robot.setDrivePower(0,0,0,0); //stop drive motors so we don't run away
                 robot.gripperdrop(); //open the gripper
-                robot.setShuttlePower(1);  // slide slightly forward
+                robot.setShuttlePower(.9);  // slide slightly forward
                 sleep(1500); //brief pause to let the gripper and shuttle get to where they need to be
                 //now lower the elevator to 50
-                robot.setElevatorPosition(-90);
+                robot.setElevatorPosition(-95);
                 telemetry.addData("Pickup Sequence:Moving Elevator","");
                 telemetry.update();
 //                while (robot.getElevatorHeight() <-85 && gamepad2.y )  { }  //do nothing until the elevator gets there or we let go of y
@@ -315,8 +315,7 @@ public class GameDriveV1 extends LinearOpMode {
             telemetry.addData("x/y", "%4.2f, %4.2f", gamepad1.right_stick_x, gamepad1.right_stick_y);
             telemetry.addData("left Distance", robot.getDistanceLeft());
             telemetry.addData("right Distance", robot.getDistanceRight());
-            telemetry.addData("left Color", robot.getleftcolor());
-            telemetry.addData("right Color", robot.getrightcolor());
+            telemetry.addData("front Distance", robot.getDistanceFront());
 
 
             telemetry.update();
