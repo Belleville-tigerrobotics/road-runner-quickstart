@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Thread.sleep;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -36,6 +38,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -86,6 +89,7 @@ public class RobotHardware {
     DistanceSensor sensorDistanceRight;
     DistanceSensor sensorDistanceFront;
 
+    TouchSensor sensorTouch;
 
     // Define speed and power limits
     public double elevatorPower = 0.8;
@@ -114,6 +118,8 @@ public class RobotHardware {
         leftRearDrive = myOpMode.hardwareMap.get(DcMotor.class, "leftRearDrive");
         rightRearDrive = myOpMode.hardwareMap.get(DcMotor.class, "rightRearDrive");
         elevator = myOpMode.hardwareMap.get(DcMotor.class, "elevator");
+
+        sensorTouch = myOpMode.hardwareMap.get(TouchSensor.class, "touch");
 
         //initialize the IMU
 
@@ -273,6 +279,19 @@ public class RobotHardware {
     }
     public double getDistanceFront() { return sensorDistanceFront.getDistance(DistanceUnit.CM); }
 
+    public boolean getTouch() { return sensorTouch.isPressed(); };
+
+    public int dropToFindCone() {
+        int myElevatorHeight = 0;
+        if ( !getTouch()) {
+            myElevatorHeight = getElevatorHeight();
+            while (!getTouch() && myElevatorHeight >20)  {
+                setElevatorPosition( -myElevatorHeight+20 );
+                myElevatorHeight = getElevatorHeight();
+            }
+        }
+    return getElevatorHeight();
+    }
 
 }
 

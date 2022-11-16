@@ -63,6 +63,9 @@ public class GameDriveV1 extends LinearOpMode {
     private double elevatorSpeed =0 ;
     private double currentShuttlePosition = 0.5 ;
     private int newShuttlePosition;
+    private boolean stackInOkPosition = false ;
+    private int stackIndex = 0 ;
+    private int theloopcounter = 0;
 
 //variables for field-centric drive
     double driveTurn;
@@ -138,7 +141,7 @@ public class GameDriveV1 extends LinearOpMode {
 
             //Special pickup function--press y when elevator is lower than leve
 
-            if ( currentElevatorHeight <550 && gamepad2.y ){
+            if ( currentElevatorHeight <4550 && gamepad2.y ){
                 telemetry.addData("Beginning Pickup Sequence","");
                 telemetry.update();
                 robot.setDrivePower(0,0,0,0); //stop drive motors so we don't run away
@@ -158,7 +161,128 @@ public class GameDriveV1 extends LinearOpMode {
                     robot.setElevatorPosition(-elevatorPosition0);
 
             }
+/*
+// new code Nov 13--pickup from stack of cones along wall
+            if ( currentElevatorHeight <550 && gamepad2.x ){
+                stackInOkPosition = false; //set our flag before we test
+                telemetry.addData("Aligning with tower of cones","");
+                telemetry.update();
+                robot.setDrivePower(0,0,0,0); //stop drive motors so we don't run away
+                robot.gripperdrop(); //open the gripper
+                robot.setElevatorPosition(-1729); //raise it up high enough to clear the top of the stack
+//put some code here to read the sensors and make sure the stack is where we want it...move if not
+                //start with the forward distance, then use the sides to make sure we're centeredish
+                //if these things line up, then set the OK flag
+                stackInOkPosition=true;
+                //now slowly lower the elevator until the limit switch hits or we get back to 0
+                //set the stackIndex value to which itm we're at=-or maybe just use where we're at and go from here
+                //lots of work to do here...need to htink about this
 
+                telemetry.addData("Beginning Pickup Sequence","");
+                telemetry.update();
+                robot.setDrivePower(0,0,0,0); //stop drive motors so we don't run away
+                robot.gripperdrop(); //open the gripper
+                robot.setShuttlePower(.9);  // slide slightly forward
+                sleep(1500); //brief pause to let the gripper and shuttle get to where they need to be
+                //now lower the elevator to 50
+                robot.setElevatorPosition(-95);
+                telemetry.addData("Pickup Sequence:Moving Elevator","");
+                telemetry.update();
+//                while (robot.getElevatorHeight() <-85 && gamepad2.y )  { }  //do nothing until the elevator gets there or we let go of y
+                sleep (700); //wait for it to get there
+                //now pick up the cone
+
+                robot.gripperpickup();
+                sleep (800);
+                robot.setElevatorPosition(-elevatorPosition0);
+
+            }
+
+            */
+
+            if (gamepad1.y) { //some code to try to centralize the cone stack for pickup
+                if (robot.getDistanceFront() <21) //we're close enough to try to home in
+                    theloopcounter = 0;
+                    robot.setDrivePower(.1,.1,.1,.1);
+                    while (theloopcounter<100 && robot.getDistanceFront() >12) {
+                            theloopcounter = theloopcounter+1;}
+                    robot.setDrivePower(0,0,0,0);
+
+
+
+
+                    }
+
+
+            if (gamepad2.a) { //this preps the elevator for 5 cone stack pickup
+                robot.setShuttlePower(0);
+                robot.setElevatorPosition(-850);
+            }
+
+            if ( currentElevatorHeight <1550 && gamepad2.x ){
+                robot.setDrivePower(0,0,0,0); //stop drive motors so we don't run away
+                //
+                stackInOkPosition = false; //set our flag before we test
+                telemetry.addData("Aligning with tower of cones","");
+                telemetry.update();
+                robot.setDrivePower(0,0,0,0); //stop drive motors so we don't run away
+                robot.gripperdrop(); //open the gripper
+                robot.setElevatorPosition(-750); //raise it up high enough to clear the top of the stack
+//put some code here to read the sensors and make sure the stack is where we want it...move if not
+                //start with the forward distance, then use the sides to make sure we're centeredish
+                //if these things line up, then set the OK flag
+                if (robot.getDistanceFront() >11 && robot.getDistanceFront() <14.5 ) {
+             //       if ( robot.getDistanceLeft() >6 && robot.getDistanceLeft() <15 ) {
+                        stackInOkPosition = true;
+                    } else { stackInOkPosition = false ; }
+              //  }
+                //now slowly lower the elevator until the limit switch hits or we get back to 0
+                //set the stackIndex value to which itm we're at=-or maybe just use where we're at and go from here
+                //lots of work to do here...need to htink about this
+//need the cone distance between 13
+                //left-right between 9 and 15
+
+                telemetry.addData("Beginning Pickup Sequence","");
+                telemetry.update();
+                if (stackInOkPosition) {
+                    robot.gripperdrop(); //open the gripper
+                    robot.setShuttlePower(0);
+                    robot.dropToFindCone();
+
+
+                    int currentElevator=robot.getElevatorHeight();
+                    robot.setShuttlePower(.5);
+                    robot.setElevatorPosition(-(currentElevator+550));
+                    //creep forward just a smidge
+                    robot.setDrivePower(.18,.18,.18,.18);
+                    sleep(200);
+                    robot.setDrivePower(0,0,0,0);
+
+                    sleep(450);
+                    robot.setShuttlePower(.91);
+                    sleep(750);
+                    robot.setElevatorPosition(-(currentElevator+355));
+                    sleep(700);
+                    robot.gripperpickup();
+                    sleep(500);
+                    robot.setElevatorPosition(-(currentElevator+850));
+                }
+
+  //              robot.setShuttlePower(.9);  // slide slightly forward
+  //              sleep(1500); //brief pause to let the gripper and shuttle get to where they need to be
+                //now lower the elevator to 50
+  //              robot.setElevatorPosition(-95);
+         //       telemetry.addData("Pickup Sequence:Moving Elevator","");
+         //       telemetry.update();
+//                while (robot.getElevatorHeight() <-85 && gamepad2.y )  { }  //do nothing until the elevator gets there or we let go of y
+       //         sleep (700); //wait for it to get there
+                //now pick up the cone
+
+   //             robot.gripperpickup();
+     //           sleep (800);
+     //           robot.setElevatorPosition(-elevatorPosition0);
+
+            }
 
 
 
@@ -238,16 +362,6 @@ public class GameDriveV1 extends LinearOpMode {
                 rightBackPower  /= max;
             }
 
-            // This is test code:
-            //
-            // Uncomment the following code to test your motor directions.
-            // Each button should make the corresponding motor run FORWARD.
-            //   1) First get all the motors to take to correct positions on the robot
-            //      by adjusting your Robot Configuration if necessary.
-            //   2) Then make sure they run in the correct direction by modifying the
-            //      the setDirection() calls above.
-            // Once the correct motors move in the correct direction re-comment this code.
-
 
             // Send calculated power to wheels, and reduce speed as necessary due to elevator height
             robot.setDrivePower(leftFrontPower*maximumDriveSpeed,
@@ -305,7 +419,7 @@ public class GameDriveV1 extends LinearOpMode {
             telemetry.addData("Controller A bumpers for shuttle", " "  );
             telemetry.addData("ControllerB Bumpers for gripper, triggers for up down, dpad for set positions", " "  );
             telemetry.addData("Servo Position", robot.getGripperPosition());
-
+            telemetry.addData("elevator Height", robot.getElevatorHeight());
             telemetry.addData("Status", "Run Time: " + runtime.toString());
 //            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
 //            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
@@ -316,6 +430,7 @@ public class GameDriveV1 extends LinearOpMode {
             telemetry.addData("left Distance", robot.getDistanceLeft());
             telemetry.addData("right Distance", robot.getDistanceRight());
             telemetry.addData("front Distance", robot.getDistanceFront());
+            telemetry.addData("touch", robot.getTouch());
 
 
             telemetry.update();
