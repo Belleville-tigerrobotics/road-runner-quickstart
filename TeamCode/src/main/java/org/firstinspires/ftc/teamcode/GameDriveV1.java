@@ -57,7 +57,7 @@ public class GameDriveV1 extends LinearOpMode {
     private int elevatorPosition0 = 350;
     private int elevatorPosition1 = 1729;
     private int elevatorPosition2 = 2890;
-    private int elevatorPosition3 = 4100;
+    private int elevatorPosition3 = 4070;
   //  private boolean manualElevatorActive = false;
     private boolean elevatorMoving = false;
     private double elevatorSpeed =0 ;
@@ -261,7 +261,7 @@ public class GameDriveV1 extends LinearOpMode {
                     sleep(450);
                     robot.setShuttlePower(.91);
                     sleep(750);
-                    robot.setElevatorPosition(-(currentElevator+355));
+                    robot.setElevatorPosition(-(currentElevator+315)); //was 335
                     sleep(700);
                     robot.gripperpickup();
                     sleep(500);
@@ -409,7 +409,11 @@ public class GameDriveV1 extends LinearOpMode {
                 ((gamepadYControl * Math.abs(gamepadYControl) - gamepadXControl * Math.abs(gamepadXControl) - driveTurn)*speedMultiplier)
             );
 //note, needed to switch middle two?
-
+//sloppy double code just to update the elemetry
+            if (robot.getDistanceFront() >11 && robot.getDistanceFront() <14.5 ) {
+                //       if ( robot.getDistanceLeft() >6 && robot.getDistanceLeft() <15 ) {
+                stackInOkPosition = true;
+            } else { stackInOkPosition = false ; }
 
 
 
@@ -423,14 +427,20 @@ public class GameDriveV1 extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
 //            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
 //            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.addData("Movement degree"  , movementDegree);
-            telemetry.addData("gamepad degree"  , gamepadDegree);
-            telemetry.addData("robot degree"  , robotDegree);
-            telemetry.addData("x/y", "%4.2f, %4.2f", gamepad1.right_stick_x, gamepad1.right_stick_y);
+//            telemetry.addData("Movement degree"  , movementDegree);
+//            telemetry.addData("gamepad degree"  , gamepadDegree);
+//            telemetry.addData("robot degree"  , robotDegree);
+//            telemetry.addData("x/y", "%4.2f, %4.2f", gamepad1.right_stick_x, gamepad1.right_stick_y);
             telemetry.addData("left Distance", robot.getDistanceLeft());
             telemetry.addData("right Distance", robot.getDistanceRight());
             telemetry.addData("front Distance", robot.getDistanceFront());
-            telemetry.addData("touch", robot.getTouch());
+        if (!stackInOkPosition) {
+            telemetry.addData("NOT LINED UP FOR STACK","!!!!");
+            telemetry.addData("NOT LINED UP FOR STACK","!!!!");
+            telemetry.addData("NOT LINED UP FOR STACK","!!!!");
+        }
+
+            //            telemetry.addData("touch", robot.getTouch());
 
 
             telemetry.update();
