@@ -50,13 +50,14 @@ public class GameDriveV1 extends LinearOpMode {
 
     RobotHardware   robot       = new RobotHardware(this);
 
+
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
 //These are the elevator heights.  Note, these are absolute values...the actual encoder is reversed so these are inverted when implemented
     private int currentElevatorHeight = 0;
     private int elevatorPosition0 = 350;
-    private int elevatorPosition1 = 1729;
-    private int elevatorPosition2 = 2890;
+    private int elevatorPosition1 = 1650;//1729
+    private int elevatorPosition2 = 2820;//2890
     private int elevatorPosition3 = 4070;
   //  private boolean manualElevatorActive = false;
     private boolean elevatorMoving = false;
@@ -141,7 +142,7 @@ public class GameDriveV1 extends LinearOpMode {
 
             //Special pickup function--press y when elevator is lower than leve
 
-            if ( currentElevatorHeight <4550 && gamepad2.y ){
+            if ( currentElevatorHeight <1650 && gamepad2.y ){
                 telemetry.addData("Beginning Pickup Sequence","");
                 telemetry.update();
                 robot.setDrivePower(0,0,0,0); //stop drive motors so we don't run away
@@ -199,7 +200,7 @@ public class GameDriveV1 extends LinearOpMode {
             }
 
             */
-
+/*
             if (gamepad1.y) { //some code to try to centralize the cone stack for pickup
                 if (robot.getDistanceFront() <21) //we're close enough to try to home in
                     theloopcounter = 0;
@@ -212,7 +213,7 @@ public class GameDriveV1 extends LinearOpMode {
 
 
                     }
-
+*/
 
             if (gamepad2.a) { //this preps the elevator for 5 cone stack pickup
                 robot.setShuttlePower(0);
@@ -260,9 +261,9 @@ public class GameDriveV1 extends LinearOpMode {
 
                     sleep(450);
                     robot.setShuttlePower(.91);
-                    sleep(750);
-                    robot.setElevatorPosition(-(currentElevator+315)); //was 335
                     sleep(700);
+                    robot.setElevatorPosition(-(currentElevator+250)); //was 335
+                    sleep(370);
                     robot.gripperpickup();
                     sleep(500);
                     robot.setElevatorPosition(-(currentElevator+850));
@@ -298,6 +299,13 @@ public class GameDriveV1 extends LinearOpMode {
 //                    robot.setShuttlePower(.5); //both buttons
 //                    break;
 //            }
+
+
+            if ( gamepad1.b && gamepad2.b ) {
+                robot.panicReset1();
+                sleep(500);
+                robot.panicReset2();
+            }
 
             if ( gamepad2.left_bumper) { robot.gripperpickup() ; };
             if ( gamepad2.right_bumper) { robot.gripperdrop() ; };
@@ -435,8 +443,8 @@ public class GameDriveV1 extends LinearOpMode {
             telemetry.addData("right Distance", robot.getDistanceRight());
             telemetry.addData("front Distance", robot.getDistanceFront());
         if (!stackInOkPosition) {
-            telemetry.addData("NOT LINED UP FOR STACK","!!!!");
-            telemetry.addData("NOT LINED UP FOR STACK","!!!!");
+            telemetry.addData("NOT LINED UP FOR STACK","!!!! Front Needs to be ");
+            telemetry.addData("NOT LINED UP FOR STACK","!! between 11 & 14.5");
             telemetry.addData("NOT LINED UP FOR STACK","!!!!");
         }
 

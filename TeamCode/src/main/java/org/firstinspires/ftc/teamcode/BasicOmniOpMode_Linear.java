@@ -77,7 +77,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
     // gripper controlled with controller2 bumpers
 
 @TeleOp(name="Basic: v1.1 Omni Linear OpMode", group="Linear Opmode")
-//@Disabled
+@Disabled
 public class BasicOmniOpMode_Linear extends LinearOpMode {
 
     RobotHardware   robot       = new RobotHardware(this);

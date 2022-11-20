@@ -281,12 +281,44 @@ public class RobotHardware {
 
     public boolean getTouch() { return sensorTouch.isPressed(); };
 
+    public void panicReset1() {
+        //emergency reset
+        elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        elevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        shuttle.setPosition(MID_SERVO);
+        elevator.setTargetPosition(200);
+        elevator.setPower(.5);
+        //       sleep(1000);
+    }
+
+    public void panicReset2() {
+
+        //now redu the init stuff for shuttle and elevator
+        elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        elevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        elevator.setTargetPosition(-100);
+        elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        elevator.setPower(.8);
+
+
+        // Define and initialize ALL installed servos.
+        gripper.setPosition(0);
+        gripper2.setPosition(1);
+        shuttle.setPosition(MID_SERVO);
+
+
+    }
+
+
+
     public int dropToFindCone() {
         int myElevatorHeight = 0;
         if ( !getTouch()) {
             myElevatorHeight = getElevatorHeight();
-            while (!getTouch() && myElevatorHeight >20)  {
-                setElevatorPosition( -myElevatorHeight+20 );
+            while (!getTouch() && myElevatorHeight >30)  {
+                setElevatorPosition( -myElevatorHeight+40 );
                 myElevatorHeight = getElevatorHeight();
             }
         }
