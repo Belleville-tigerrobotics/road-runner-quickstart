@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -85,6 +86,10 @@ public class RobotAccessoriesPowerPlay {
     ColorSensor sensorColorRight;
     DistanceSensor sensorDistanceLeft;
     DistanceSensor sensorDistanceRight;
+    DistanceSensor sensorDistanceFront;
+
+    TouchSensor sensorTouch;
+
 
 
     // Define speed and power limits
@@ -126,9 +131,11 @@ public class RobotAccessoriesPowerPlay {
         // initialize the distance sensors
         sensorDistanceLeft = myOpMode.hardwareMap.get(DistanceSensor.class, "rangeleft");
         sensorDistanceRight = myOpMode.hardwareMap.get(DistanceSensor.class, "rangeright");
+        sensorDistanceFront = myOpMode.hardwareMap.get(DistanceSensor.class, "rangefront");
 
-        sensorColorLeft = myOpMode.hardwareMap.get(ColorSensor.class, "rangeleft");
-        sensorColorRight = myOpMode.hardwareMap.get(ColorSensor.class, "rangeright");
+//        sensorColorLeft = myOpMode.hardwareMap.get(ColorSensor.class, "rangeleft");
+//        sensorColorRight = myOpMode.hardwareMap.get(ColorSensor.class, "rangeright");
+        sensorTouch = myOpMode.hardwareMap.get(TouchSensor.class, "touch");
 
 
         elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -159,7 +166,7 @@ public class RobotAccessoriesPowerPlay {
     }
 
     public void setElevatorPosition(int newposition) {
-        int currentposition = getElevatorHeight();
+    //    int currentposition = getElevatorHeight();
         elevator.setTargetPosition(newposition);
         elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         elevator.setPower(.4);
@@ -212,6 +219,54 @@ public class RobotAccessoriesPowerPlay {
     public double getrightcolor() {
         return sensorColorRight.argb();
     }
+
+    public void panicReset1() {
+        //emergency reset
+        elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        elevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        shuttle.setPosition(MID_SERVO);
+        elevator.setTargetPosition(200);
+        elevator.setPower(.5);
+        //       sleep(1000);
+    }
+
+    public void panicReset2() {
+
+        //now redu the init stuff for shuttle and elevator
+        elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        elevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        elevator.setTargetPosition(-100);
+        elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        elevator.setPower(.8);
+
+
+        // Define and initialize ALL installed servos.
+        gripper.setPosition(0);
+        gripper2.setPosition(1);
+        shuttle.setPosition(MID_SERVO);
+
+
+    }
+    public double getDistanceFront() { return sensorDistanceFront.getDistance(DistanceUnit.CM); }
+
+    public boolean getTouch() { return sensorTouch.isPressed(); };
+
+
+    public int dropToFindCone() {
+        int myElevatorHeight = 0;
+        if ( !getTouch()) {
+            myElevatorHeight = getElevatorHeight();
+            while (!getTouch() && myElevatorHeight >30)  {
+                setElevatorPosition( -myElevatorHeight+40 );
+                myElevatorHeight = getElevatorHeight();
+            }
+        }
+        return getElevatorHeight();
+    }
+
+
 
 }
 

@@ -30,6 +30,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.RobotAccessoriesPowerPlay;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.fieldcentricdrive.PoseStorage;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -235,7 +236,7 @@ public class AutoLeftSideV1 extends LinearOpMode
                 drive.followTrajectorySequence(traj);
             }
         }
-
+        PoseStorage.currentPose = drive.getPoseEstimate();   //new line added dg to store the current robot pose for use in teleop
   }
 
     void tagToTelemetry(AprilTagDetection detection)
