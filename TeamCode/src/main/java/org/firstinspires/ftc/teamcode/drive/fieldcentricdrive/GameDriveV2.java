@@ -69,8 +69,8 @@ public class GameDriveV2 extends LinearOpMode {
             // Create a vector from the gamepad x/y inputs
             // Then, rotate that vector by the inverse of that heading
             Vector2d input = new Vector2d(
-                    -gamepad1.left_stick_y,
-                    -gamepad1.left_stick_x
+                    -gamepad1.left_stick_y *0.7,
+                    -gamepad1.left_stick_x *0.7
             ).rotated(-poseEstimate.getHeading());
 
             // Pass in the rotated input + right stick value for rotation
@@ -79,7 +79,7 @@ public class GameDriveV2 extends LinearOpMode {
                     new Pose2d(
                             input.getX(),
                             input.getY(),
-                            -gamepad1.right_stick_x
+                            -gamepad1.right_stick_x *0.7
                     )
             );
 
@@ -256,13 +256,30 @@ public class GameDriveV2 extends LinearOpMode {
                     robot.panicReset2();
                 }
 
+            if (robot.getDistanceFront() >11 && robot.getDistanceFront() <14.5 ) {
+                //       if ( robot.getDistanceLeft() >6 && robot.getDistanceLeft() <15 ) {
+                stackInOkPosition = true;
+            } else { stackInOkPosition = false ; }
 
 
-                // Print pose to telemetry
+
+
+            // Print pose to telemetry
                 telemetry.addData("x", poseEstimate.getX());
                 telemetry.addData("y", poseEstimate.getY());
                 telemetry.addData("heading", poseEstimate.getHeading());
-                telemetry.update();
+
+            telemetry.addData("left Distance", robot.getDistanceLeft());
+            telemetry.addData("right Distance", robot.getDistanceRight());
+            telemetry.addData("front Distance", robot.getDistanceFront());
+            if (!stackInOkPosition) {
+                telemetry.addData("NOT LINED UP FOR STACK","!!!! Front Needs to be ");
+                telemetry.addData("NOT LINED UP FOR STACK","!! between 11 & 14.5");
+                telemetry.addData("NOT LINED UP FOR STACK","!!!!");
+            }
+
+
+            telemetry.update();
             }
         }
     }

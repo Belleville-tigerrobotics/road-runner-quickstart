@@ -169,7 +169,7 @@ public class RobotAccessoriesPowerPlay {
     //    int currentposition = getElevatorHeight();
         elevator.setTargetPosition(newposition);
         elevator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        elevator.setPower(.4);
+        elevator.setPower(.6);
     }
 
     public void setElevatorPower(double elevatorPower) {
