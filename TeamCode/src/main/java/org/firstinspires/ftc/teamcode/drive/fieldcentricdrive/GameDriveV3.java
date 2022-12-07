@@ -39,6 +39,7 @@ public class GameDriveV3 extends LinearOpMode {
     private int theloopcounter = 0;
     double speedMultiplier = .5;
     double colorvalues[] = {0F, 0F, 0F};
+    double shuttlePositionForAutoPickup = 1;
 
 
     @Override
@@ -152,7 +153,7 @@ public class GameDriveV3 extends LinearOpMode {
                 drive.setWeightedDrivePower(new Pose2d(0, 0, 0));
 
                 robot.gripperdrop(); //open the gripper
-                robot.setShuttlePower(1);  // slide slightly forward   Origianally was 0.9, now extended fully to 1.0
+                robot.setShuttlePower(shuttlePositionForAutoPickup);  // slide slightly forward   Origianally was 0.9, now extended fully to 1.0
                 sleep(1500); //brief pause to let the gripper and shuttle get to where they need to be.  Might be able to shorten this sleep by a bit to make it all faster.
                 //now lower the elevator to 50
                 robot.setElevatorPosition(-95);
@@ -165,7 +166,7 @@ public class GameDriveV3 extends LinearOpMode {
                 robot.gripperpickup();  //pickup the cone
                 sleep(800);   //wait for the pickup to finish
                 robot.setElevatorPosition(-elevatorPosition0);  //raise the elevator to driving position
-            } 
+            }
 
                 if (gamepad2.a) { //this preps the elevator for 5 cone stack pickup
                     robot.setShuttlePower(0);
