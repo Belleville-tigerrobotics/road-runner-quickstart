@@ -192,8 +192,9 @@ public class AutoLeftSideV1 extends LinearOpMode
 
 
             TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d(36, -67, 0))
-                    .strafeLeft(45)
-                    .forward(38)
+                    .strafeLeft(46) //45
+                    .turn(.18)
+                    .forward(33)   //35
                     .build();
             drive.followTrajectorySequence(traj);
 
@@ -213,25 +214,27 @@ public class AutoLeftSideV1 extends LinearOpMode
                 // do something
                 TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d(36, -67, 0))
                         .strafeLeft(46) //45
-                        .forward(35)   //35
+                        .turn(.18)
+                        .forward(33)   //35
                         .build();
                 drive.followTrajectorySequence(traj);
             }
             else if(signalIdFound==2)
             {
                 TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d(36, -67, 0))
-                        .strafeLeft(45)  //25
+   //                     .strafeLeft(45)  //25
                         .forward(38)//30
-                        .forward(20)
-                        .strafeRight(45) //25
+   //                     .forward(20)
+   //                     .strafeRight(47) //25
                         .build();
                 drive.followTrajectorySequence(traj);
             }
             else if(signalIdFound==3)
             {
                 TrajectorySequence traj = drive.trajectorySequenceBuilder(new Pose2d(36, -67, 0))
-                        .strafeRight(45)//25
-                        .forward(35)  //30
+                        .strafeRight(49)//25
+                        .turn(-.22)
+                        .forward(33)  //30
                         .build();
                 drive.followTrajectorySequence(traj);
             }
